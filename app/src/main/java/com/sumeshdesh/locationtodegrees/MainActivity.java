@@ -80,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        //locationPrompt();
         if(client != null){
             startLocationUpdates();
             Toast.makeText(this,"Connected", Toast.LENGTH_SHORT).show();
@@ -91,11 +90,13 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     protected void startLocationUpdates(){
-        try {
-            LocationServices.FusedLocationApi.requestLocationUpdates(
-                    client, locationRequest, this);
-        } catch (SecurityException e){
-            return;
+        if(LocationServices.FusedLocationApi == null) {
+            try {
+                LocationServices.FusedLocationApi.requestLocationUpdates(
+                        client, locationRequest, this);
+            } catch (SecurityException e) {
+                return;
+            }
         }
 
 
@@ -141,9 +142,4 @@ public class MainActivity extends AppCompatActivity implements
         }
 
     }
-
- //   public void locationPrompt(){
-      //  ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_INT);
-  ////  }
-
 }
