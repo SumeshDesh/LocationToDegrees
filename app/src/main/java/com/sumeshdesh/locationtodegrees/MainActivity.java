@@ -71,14 +71,22 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onStop(){
         super.onStop();
-        client.disconnect();
+        if(client.isConnected()) {
+            client.disconnect();
+            LocationServices.FusedLocationApi.removeLocationUpdates(client,this);
+        }
     }
 
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        //locationPrompt();
         if(client != null){
             startLocationUpdates();
+            Toast.makeText(this,"Connected", Toast.LENGTH_SHORT).show();
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_INT);
+            }
         }
     }
 
@@ -90,12 +98,9 @@ public class MainActivity extends AppCompatActivity implements
             return;
         }
 
-        Toast.makeText(this,"Connected", Toast.LENGTH_SHORT).show();
 
         if(LocationServices.FusedLocationApi != null){
-            if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_INT);
-            }
+
             try{
 
                 currentLocation = LocationServices.FusedLocationApi.getLastLocation(client);
@@ -105,14 +110,13 @@ public class MainActivity extends AppCompatActivity implements
 
             } catch(SecurityException | NullPointerException e){
                 Toast.makeText(this, "Connection Failed", Toast.LENGTH_SHORT).show();
-                locationPrompt();
             }
         }
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        Toast.makeText(this, "Woah", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -125,18 +129,21 @@ public class MainActivity extends AppCompatActivity implements
     public void onLocationChanged(Location location) {
         Toast.makeText(this,"Location Changed",Toast.LENGTH_SHORT).show();
         try {
-        client.reconnect();
+            client.disconnect();
+            client.connect();
             currentLocation = LocationServices.FusedLocationApi.getLastLocation(client);
-            txtLat.setText(String.valueOf(currentLocation.getLatitude()));
-            txtLong.setText(String.valueOf(currentLocation.getLongitude()));
+            if( currentLocation  != null){
+                txtLat.setText(String.valueOf(currentLocation.getLatitude()));
+                txtLong.setText(String.valueOf(currentLocation.getLongitude()));
+            }
         } catch(SecurityException e){
             Toast.makeText(this, "Connection Failed", Toast.LENGTH_SHORT).show();
         }
 
     }
 
-    public void locationPrompt(){
-        ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_INT);
-    }
+ //   public void locationPrompt(){
+      //  ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_INT);
+  ////  }
 
 }
