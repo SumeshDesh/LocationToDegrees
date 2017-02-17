@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">LocationToDegrees</string>
+    <string name="txtLong">Longitude</string>
+    <string name="txtLat">Latitude</string>
+    <string name="title">Placeholder!!</string>
+    <string name="blank"> </string>
+</resources>
